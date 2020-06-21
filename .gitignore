@@ -1,4 +1,4 @@
 *.ram
 *.bin
 *.o
-.vscode/*
+.vscode/
