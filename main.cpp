@@ -40,19 +40,22 @@ int main(int argc, char** argv){
                     fclose(romFile);
                     break;
                 }
+                case 'd':
+                    CPU.DEBUG = true;
+                    break;
             }
         }
+    }
         if(ramPointer == nullptr){
             printf("Missing RAM init\n");
             return 1;
         }
-        
+
         CPU.ram = ramPointer;
 
         for(i = 0; i < 15; i++){ //runs the first three instructions
             CPU.cycle();
             printf("%X\n", CPU.outReg);
         }
-    }
     return 0;
 }
