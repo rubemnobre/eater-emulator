@@ -1,2 +1,2 @@
 make:
-	g++ main.cpp -o emulator
+	g++ main.cpp -o emulator.bin
