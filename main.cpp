@@ -1,11 +1,11 @@
 #include "ram.cpp"
 #include "logic.cpp"
 
-const char helptext[] = "usage: \n-f <file> : loads the binary file into RAM\n-r <file> : loads the binary file for the instructions rom\n-d : run with debug option on\n";
+const char helptext[] = "usage: \n-f <file> : loads the binary file into RAM\n-r <file> : loads the binary file for the instructions rom\n-d : run with debug option on\n-s : signed output";
 
 
 int main(int argc, char** argv){
-    const bool SIGNED_OUT = true;
+    bool SIGNED_OUT = false;
     uint8_t* ramPointer = nullptr; //ram array 
 
     logic CPU(nullptr);
@@ -49,6 +49,9 @@ int main(int argc, char** argv){
                     fclose(romFile);
                     break;
                 }
+                case 's': //Set signed output to true
+                    SIGNED_OUT = true;
+                    break;
                 case 'd':
                     CPU.DEBUG = true;
                     break;
@@ -61,7 +64,7 @@ int main(int argc, char** argv){
         }
 
         CPU.ram = ramPointer;
-        int prevOut = 0;
+        int prevOut = 1024;
         while(!CPU.halt){ //runs until the CPU halts
             CPU.cycle();
             if(CPU.outReg != prevOut){
