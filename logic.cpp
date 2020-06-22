@@ -122,8 +122,8 @@ class logic{
                 if(DEBUG)
                     printf("RO ");
             }
-            if(options & IO){ //IO (IR Out): puts IR on the bus
-                bus = IR;
+            if(options & IO){ //IO (IR Out): puts the 4lsb from IR on the bus
+                bus = IR & 0x0f;
                 if(DEBUG)
                     printf("IO ");
             }
