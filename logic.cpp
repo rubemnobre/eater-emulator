@@ -70,77 +70,77 @@ class logic{
             if(DEBUG && options){
                 printf("Instructions: ");
             }
-            if((options >> 0x2) & 1){ //CO (Counter Out): puts the content of PC into the Bus
+            if(options & CO){ //CO (Counter Out): puts the content of PC into the Bus
                 bus = PC;
                 if(DEBUG)
                     printf("CO ");
             }
-            if((options >> 0x7) & 1){ //EO (Sum Out): puts the regA + regB value in the bus (simulating the ALU's job)
-                if((options >> 0x8) & 1){ //SU (Subtraction Out): inverts the B value (simulating the ALU's job)
+            if(options & EO){ //EO (Sum Out): puts the regA + regB value in the bus (simulating the ALU's job)
+                if(options & SU){ //SU (Subtraction Out): inverts the B value (simulating the ALU's job)
                     bus = (uint8_t)((int)regA - (int)regB);
                     if(DEBUG)
-                        printf("EO ");
+                        printf("SU ");
                 }else
                     bus = regA + regB;
                 if(DEBUG)
-                    printf("SU ");
+                    printf("EO ");
             }
-            if((options >> 0x8) & 1){ //AO (A Reg Out): puts the A Register value in the bus
+            if(options & AO){ //AO (A Reg Out): puts the A Register value in the bus
                 bus = regA;
                 if(DEBUG)
                     printf("AO ");
             }
-            if((options >> 0xC) & 1){ //RO (Ram Out): puts the value in ram pointed to by the MAR in the bus
+            if(options & RO){ //RO (Ram Out): puts the value in ram pointed to by the MAR in the bus
                 bus = ram[MAR];
                 if(DEBUG)
                     printf("RO ");
             }
-            if((options >> 0xB) & 1){ //IO (IR Out): puts IR on the bus
+            if(options & IO){ //IO (IR Out): puts IR on the bus
                 bus = IR;
                 if(DEBUG)
                     printf("IO ");
             }
-            if((options >> 0x1) & 1){ //J (PC In): puts the bus value in the Program Counter
+            if(options & J){ //J (PC In): puts the bus value in the Program Counter
                 PC = bus;
                 if(DEBUG)
                     printf("J ");
             }
-            if((options >> 0x4) & 1){ //OI (Output Reg In): puts the bus value in the Output Register
+            if(options & OI){ //OI (Output Reg In): puts the bus value in the Output Register
                 outReg = bus;
                 if(DEBUG)
                     printf("OI ");
             }
-            if((options >> 0x5) & 1){ //BI (B Reg In): puts the bus value in the B Register
+            if(options & BI){ //BI (B Reg In): puts the bus value in the B Register
                 regB = bus;
                 if(DEBUG)
                     printf("BI ");
             }
-            if((options >> 0x9) & 1){ //AI (A Reg In): puts the bus value in the A Register
+            if(options & AI){ //AI (A Reg In): puts the bus value in the A Register
                 regA = bus;
                 if(DEBUG)
                     printf("AI ");
             }
-            if((options >> 0xA) & 1){ //II (IR In): puts the bus value into the IR
+            if(options & II){ //II (IR In): puts the bus value into the IR
                 IR = bus;
                 if(DEBUG)
                     printf("II ");
             }
-            if((options >> 0xD) & 1){ //II (IR In): puts the bus value into the RAM
+            if(options & RI){ //RI (RAM In): puts the bus value into the RAM
                 ram[MAR] = bus;
                 if(DEBUG)
                     printf("II ");
             }
-            if((options >> 0xE) & 1){ //MI (MAR In): reads the address from the bus to the Memory Address Register
+            if(options & MI){ //MI (MAR In): reads the address from the bus to the Memory Address Register
                 MAR = bus & 0x0F; //This AND operation assures the MAR does not read the higher nibble
                 if(DEBUG)
                     printf("MI ");
             }
-            if((options >> 0xF) & 1){ //HLT (Halt): Sets the halt flag (so the clock knows to stop)
+            if(options & HLT){ //HLT (Halt): Sets the halt flag (so the clock knows to stop)
                 halt = true;
                 if(DEBUG)
                     printf("HLT ");
             }
-            if((options >> 0x3) & 1){ //CE (Counter Enable): increments the PC
+            if(options & CE){ //CE (Counter Enable): increments the PC
                 PC++;   
                 if(DEBUG)
                     printf("CE ");
