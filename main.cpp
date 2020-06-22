@@ -5,6 +5,7 @@ const char helptext[] = "usage: \n-f <file> : loads the binary file into RAM\n-r
 
 
 int main(int argc, char** argv){
+    const bool SIGNED_OUT = true;
     uint8_t* ramPointer = nullptr; //ram array 
 
     logic CPU(nullptr);
@@ -63,8 +64,13 @@ int main(int argc, char** argv){
         int prevOut = 0;
         while(!CPU.halt){ //runs until the CPU halts
             CPU.cycle();
-            if(CPU.outReg != prevOut)
-                printf("%d\n", (int)CPU.outReg); //Print the output register if its value changes
+            if(CPU.outReg != prevOut){
+                if(SIGNED_OUT)
+                    printf("%d\n", (int8_t)CPU.outReg); //Print the output register if its value changes
+                else
+                    printf("%d\n", (uint8_t)CPU.outReg); //Print the output register if its value changes
+                
+            }
             prevOut = CPU.outReg;
         }
     return 0;
