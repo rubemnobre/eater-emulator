@@ -64,17 +64,14 @@ int main(int argc, char** argv){
         }
 
         CPU.ram = ramPointer;
-        int prevOut = 1024;
         while(!CPU.halt){ //runs until the CPU halts
             CPU.cycle();
-            if(CPU.outReg != prevOut){
+            if(CPU.outputNow){
                 if(SIGNED_OUT)
                     printf("%d\n", (int8_t)CPU.outReg); //Print the output register if its value changes
                 else
                     printf("%d\n", (uint8_t)CPU.outReg); //Print the output register if its value changes
-                
             }
-            prevOut = CPU.outReg;
         }
     return 0;
 }

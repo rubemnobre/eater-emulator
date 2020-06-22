@@ -28,6 +28,7 @@ class logic{
     public:
         bool DEBUG = false;
         bool halt = false;
+        bool outputNow = false;
         uint8_t bus; //the main bus (8-bit)
         uint8_t regA; //A register (8-bit)
         uint8_t regB; //B register (8-bit)
@@ -134,9 +135,12 @@ class logic{
             }
             if(options & OI){ //OI (Output Reg In): puts the bus value in the Output Register
                 outReg = bus;
+                outputNow = true;
                 if(DEBUG)
                     printf("OI ");
-            }
+            }else
+                outputNow = false;
+            
             if(options & BI){ //BI (B Reg In): puts the bus value in the B Register
                 regB = (int)bus;
                 if(DEBUG)
