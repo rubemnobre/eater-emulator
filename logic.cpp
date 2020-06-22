@@ -32,7 +32,7 @@ class logic{
         uint8_t regA; //A register (8-bit)
         uint8_t regB; //B register (8-bit)
         uint8_t flags; //Flags Register
-        uint8_t outReg; //Output register (8-bit)
+        int8_t outReg; //Output register (8-bit)
         uint8_t *ram; //16 Bytes
         uint16_t instructions[16][STEPS_PER_INSTRUCTION] = //Equivalent to the Instruction ROM
         {
@@ -138,7 +138,7 @@ class logic{
                     printf("OI ");
             }
             if(options & BI){ //BI (B Reg In): puts the bus value in the B Register
-                regB = bus;
+                regB = (int)bus;
                 if(DEBUG)
                     printf("BI ");
             }
