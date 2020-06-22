@@ -52,10 +52,12 @@ int main(int argc, char** argv){
         }
 
         CPU.ram = ramPointer;
-
-        for(i = 0; i < 15; i++){ //runs the first three instructions
+        int prevOut = 0;
+        while(!CPU.halt){ //runs the first three instructions
             CPU.cycle();
-            printf("%X\n", CPU.outReg);
+            if(CPU.outReg != prevOut)
+                printf("%d\n", (int)CPU.outReg);
+            prevOut = CPU.outReg;
         }
     return 0;
 }
