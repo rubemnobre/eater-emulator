@@ -77,11 +77,13 @@ class logic{
                 printf("Instructions: ");
             }
             if(IR >> 4 == JC && flags & 1 && IC == 2){ //Set up the JC instruction if CF is set. If not it is no op
-                printf("JC True ");
+                if(DEBUG)
+                    printf("JC True ");
                 options = options | IO | J;
             }
             if(IR >> 4 == JZ && flags & 2 && IC == 2){ //Set up the ZC instruction if ZF is set. If not it is no op
-                printf("JZ True ");
+                if(DEBUG)
+                    printf("JZ True ");
                 options = options | IO | J;
             }
             if(options & CO){ //CO (Counter Out): puts the content of PC into the Bus
@@ -103,7 +105,8 @@ class logic{
                         co = 1;
                 }
                 if(options & FI){
-                    printf("FI ");
+                    if(DEBUG)
+                        printf("FI ");
                     flags = co | (bus?0:2);  //join the Carry flag and the Zero flag
                 }
                 if(DEBUG)
