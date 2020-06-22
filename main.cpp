@@ -1,13 +1,18 @@
 #include "ram.cpp"
 #include "logic.cpp"
 
+const char helptext[] = "usage: \n-f <file> : loads the binary file into RAM\n-r <file> : loads the binary file for the instructions rom\n-d : run with debug option on\n";
+
+
 int main(int argc, char** argv){
     uint8_t* ramPointer = nullptr; //ram array 
 
     logic CPU(nullptr);
 
+    printf("Ben Eater's 8-bit Computer Emulator\nMade by Rubem Nobre @ https://github.com/rubemnobre/eater-emulator\n\n");
+
     if(argc < 2){
-        printf("Usage: blablabla\n");
+        printf("%s", helptext);
         return 1;
     }
     
@@ -15,10 +20,13 @@ int main(int argc, char** argv){
     for(i = 1; i < argc; i++){
         if(argv[i][0] == '-'){
             switch(argv[i][1]){
+                case 'h':
+                    printf("%s", helptext);
+                    return 0;
                 case 'f':{ // -f: ram loaded from a file
                     i++;
                     if(i == argc){
-                        printf("Missing arguments for -f");
+                        printf("Missing arguments for -f\n%s", helptext);
                         return 1;
                     }
                     FILE* ramFile = fopen(argv[i], "rb");
@@ -29,10 +37,10 @@ int main(int argc, char** argv){
                 case 'n': // -n load ram as all zeroes
                     ramPointer = RAM::loadNull();
                     break;
-                case 'r':{
+                case 'r':{ // -r load instructions rom from file
                     i++;
                     if(i == argc){
-                        printf("Missing arguments for -r");
+                        printf("Missing arguments for -r\n%s", helptext);
                         return 1;
                     }
                     FILE* romFile = fopen(argv[i], "rb");
@@ -47,16 +55,16 @@ int main(int argc, char** argv){
         }
     }
         if(ramPointer == nullptr){
-            printf("Missing RAM init\n");
+            printf("Missing RAM init\n%s", helptext);
             return 1;
         }
 
         CPU.ram = ramPointer;
         int prevOut = 0;
-        while(!CPU.halt){ //runs the first three instructions
+        while(!CPU.halt){ //runs until the CPU halts
             CPU.cycle();
             if(CPU.outReg != prevOut)
-                printf("%d\n", (int)CPU.outReg);
+                printf("%d\n", (int)CPU.outReg); //Print the output register if its value changes
             prevOut = CPU.outReg;
         }
     return 0;
