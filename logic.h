@@ -28,7 +28,7 @@ class logic{
         static constexpr std::uint8_t JC = 7; //Jump if Carry instruction
         static constexpr std::uint8_t JZ = 8; //Jump if Zero instruction
 
-        std::array<std::array<std::uint16_t, STEPS_PER_INSTRUCTION>, 16> instructions { // Instruction ROM
+        static constexpr std::array<std::array<std::uint16_t, STEPS_PER_INSTRUCTION>, 16> defaultInstructions { // Instruction ROM
             std::array<std::uint16_t, STEPS_PER_INSTRUCTION>{ MI | CO, RO | II | CE                                      }, // 0x0 NOP: No op
             std::array<std::uint16_t, STEPS_PER_INSTRUCTION>{ MI | CO, RO | II | CE, MI | IO, RO | AI                    }, // 0x1 LDA: load from memory to A
             std::array<std::uint16_t, STEPS_PER_INSTRUCTION>{ MI | CO, RO | II | CE, MI | IO, RO | BI, EO | AI | FI      }, // 0x2 ADD: load from memory, add to A and put result in A
@@ -47,6 +47,8 @@ class logic{
             std::array<std::uint16_t, STEPS_PER_INSTRUCTION>{ MI | CO, RO | II | CE, HLT                                 }, // 0xF HLT: set halt flag
         };
 
+        std::array<std::array<std::uint16_t, STEPS_PER_INSTRUCTION>, 16> instructions;
+
         bool          DEBUG = false;
         bool          halt  = false;
         bool          outputNow = false;
@@ -57,9 +59,16 @@ class logic{
         std::uint8_t  outReg; //Output register (8-bit)
         std::array<std::uint8_t, 16> ram;
 
-        logic(const std::array<std::uint8_t, 16> &nram)
+        logic(const std::array<std::uint8_t, 16> &nram, const bool nDEBUG)
         {
             ram = nram;
+            DEBUG = nDEBUG;
+        }
+
+        logic(const std::array<std::uint8_t, 16> &nram, std::array<std::array<std::uint16_t, STEPS_PER_INSTRUCTION>, 16> &ninst, const bool nDEBUG){
+            ram = nram;
+            DEBUG = nDEBUG;
+            instructions = ninst;
         }
 
         void cycle() { //Runs a cycle of instructions

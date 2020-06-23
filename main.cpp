@@ -10,10 +10,14 @@
 static constexpr char helptext[] = "usage: \n-f <file> : loads the binary file into RAM\n-r <file> : loads the binary file for the instructions rom\n-d : run with debug option on\n-s : signed output\n";
 static constexpr int STEPS_PER_INSTRUCTION = 5;
 
+
 int main(int argc, char** argv){
     bool SIGNED_OUT = false;
+    bool DEBUG = false;
+    bool newInstructions = false;
     std::array<std::uint8_t, RAM::RAM_SIZE> ram = RAM::loadNull();
-    logic <STEPS_PER_INSTRUCTION> CPU(ram);
+    std::array<std::array<std::uint16_t, STEPS_PER_INSTRUCTION>, 16> instructions = logic<STEPS_PER_INSTRUCTION>::defaultInstructions;
+    
     printf("Ben Eater's 8-bit Computer Emulator\nMade by Rubem Nobre @ https://github.com/rubemnobre/eater-emulator\n\n");
 
     if(argc < 2){
@@ -36,7 +40,6 @@ int main(int argc, char** argv){
             }
             case 'r':{ // -r load instructions rom from file
                 FILE* romFile = fopen(optarg, "rb");
-                std::array<std::array<std::uint16_t, STEPS_PER_INSTRUCTION>, 16> instructions;
                 for (auto & instruction: instructions)
                 {
                     for(auto & step: instruction)
@@ -45,22 +48,21 @@ int main(int argc, char** argv){
                     }
                 }
                 fclose(romFile);
-                CPU.instructions = instructions;
                 break;
             }
             case 's': //Set signed output to true
                 SIGNED_OUT = true;
                 break;
             case 'd':
-                CPU.DEBUG = true;
+                DEBUG = true;
                 break;
             default:
                 printf("%d", helptext);
         }
     }
 
-    CPU.ram = ram;
-    
+    logic <STEPS_PER_INSTRUCTION> CPU(ram, instructions, DEBUG);
+
     while(!CPU.halt) {
         CPU.cycle();
         if(CPU.outputNow){   //Print the output register if its value changes
