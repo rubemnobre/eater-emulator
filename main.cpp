@@ -66,20 +66,30 @@ int main(int argc, char** argv){
                 return 0;
             case 'f':{ // -f: ram loaded from a file
                 FILE* ramFile = fopen(optarg, "rb");
-                ram = RAM::loadFromFile(ramFile);
-                fclose(ramFile);
+                if(ramFile){
+                    ram = RAM::loadFromFile(ramFile);
+                    fclose(ramFile);
+                }else{
+                    std::cout << "Invalid RAM file" << std::endl;
+                    return 1;
+                }
                 break;
             }
             case 'r':{ // -r load instructions rom from file
                 FILE* romFile = fopen(optarg, "rb");
-                for (auto & instruction: instructions)
-                {
-                    for(auto & step: instruction)
+                if(romFile){
+                    for (auto & instruction: instructions)
                     {
-                        fread(&step, sizeof(std::uint16_t), 1, romFile);
+                        for(auto & step: instruction)
+                        {
+                            fread(&step, sizeof(std::uint16_t), 1, romFile);
+                        }
                     }
+                    fclose(romFile);
+                }else{
+                    std::cout << "Invalid ROM file" << std::endl;
+                    return 1;
                 }
-                fclose(romFile);
                 break;
             }
             case 's': //Set signed output to true
