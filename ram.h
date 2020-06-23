@@ -24,7 +24,7 @@ namespace RAM {
         return ram;
     }
 
-    void dump(const std::array<uint8_t, RAM_SIZE> &ram) {
+    void dump(const std::array<std::uint8_t, RAM_SIZE> &ram) {
         FILE *dump = fopen("dump.ram", "wb");
         for(const auto & r : ram) {
             fputc(r, dump);

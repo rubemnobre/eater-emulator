@@ -48,7 +48,7 @@ int main(int argc, char** argv){
                     {
                         for(auto & step: instruction)
                         {
-                            fread(&step, sizeof(uint16_t), 1, romFile);
+                            fread(&step, sizeof(std::uint16_t), 1, romFile);
                         }
                     }
                     fclose(romFile);
@@ -71,9 +71,9 @@ int main(int argc, char** argv){
         CPU.cycle();
         if(CPU.outputNow){   //Print the output register if its value changes
             if(SIGNED_OUT)
-                printf("%d\n", static_cast<int8_t>(CPU.outReg));
+                printf("%d\n", static_cast<std::int8_t>(CPU.outReg));
             else
-                printf("%d\n", static_cast<uint8_t>(CPU.outReg));
+                printf("%d\n", static_cast<std::uint8_t>(CPU.outReg));
         }
     }
     return 0;
