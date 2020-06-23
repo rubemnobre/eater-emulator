@@ -3,6 +3,9 @@
 #include "ram.h"
 #include "logic.h"
 
+#include <cstdint>
+#include <cstdio>
+
 static constexpr char helptext[] = "usage: \n-f <file> : loads the binary file into RAM\n-r <file> : loads the binary file for the instructions rom\n-d : run with debug option on\n-s : signed output\n";
 static constexpr int STEPS_PER_INSTRUCTION = 5;
 

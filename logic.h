@@ -1,6 +1,7 @@
 #ifndef LOGIC_H
 #define LOGIC_H
 #include <array>
+#include <cstdint>
 #include <cstdio>
 
 template <std::size_t STEPS_PER_INSTRUCTION>
