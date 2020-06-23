@@ -2,6 +2,8 @@ eater-emulator
 ============
  Emulator of [Ben Eater's 8-bit computer](https://eater.net/8bit/) made on C++.
 
+ Also thank you to [Joseph Shaker](https://github.com/jshaker000) for the help with making this proper C++.
+
 ###  How to build
 To build this program, you can run:
 - `$ g++ main.cpp -o emulator.bin` on your console .
