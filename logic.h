@@ -1,7 +1,6 @@
 #ifndef LOGIC_H
 #define LOGIC_H
 #include <array>
-#include <cstdint>
 #include <cstdio>
 
 template <std::size_t STEPS_PER_INSTRUCTION>
@@ -57,7 +56,7 @@ class logic{
         std::uint8_t  outReg; //Output register (8-bit)
         std::array<std::uint8_t, 16> ram;
 
-        logic(const std::array<uint8_t, 16> &nram)
+        logic(const std::array<std::uint8_t, 16> &nram)
         {
             ram = nram;
         }
@@ -78,7 +77,7 @@ class logic{
         std::uint8_t PC  = 0; //Program Counter (4-bit)
         std::uint8_t IC  = 0; //Instruction Counter (0-6)
 
-        void microInstructions(uint16_t options){ //Output commands have to come first
+        void microInstructions(std::uint16_t options){ //Output commands have to come first
             if(DEBUG && options){ //The debug option shows the microinstructions that are selected in the cycle
                 printf("Instructions: ");
             }
@@ -100,14 +99,14 @@ class logic{
             if(options & EO){ //EO (Sum Out): puts the regA + regB value in the bus (simulating the ALU's job)
                 int co = 0;
                 if(options & SU){ //SU (Subtraction Out): inverts the B value (simulating the ALU's job)
-                    bus = (uint8_t)((int)regA - (int)regB);
-                    if(((int)regA - (int)regB) > 255) //if the output is > 255, write Carry Flag
+                    bus = static_cast<std::uint8_t>(regA - regB);
+                    if((regA - regB) > 255) //if the output is > 255, write Carry Flag
                         co = 1;
                     if(DEBUG)
                         printf("SU ");
                 }else{
                     bus = regA + regB;
-                    if(((int)regA + (int)regB) > 255) //if the output is > 255, write Carry Flag
+                    if((regA + regB) > 255) //if the output is > 255, write Carry Flag
                         co = 1;
                 }
                 if(options & FI){
