@@ -1,2 +1,2 @@
-make:
-	g++ main.cpp -o emulator.bin
+emulator.bin: main.cpp logic.h ram.h
+	$(CXX) $< -o $@
