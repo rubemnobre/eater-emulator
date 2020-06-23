@@ -40,8 +40,9 @@ You can pass a modified instruction set by using the `-r` option. The instructio
 
 ### Additional options
 Aside from the already mentioned options, I have included these:
- - `-t <n>` : timeout after n instructions have been run.
- - `-s` : signed output mode. With this, you will see the output as two's compliment signed bytes. Example: `255` will be printed `-1`  
+ - `-b a,b,...` : turns on debug when the Program Counter is at any of the values (a, b,...).
+ - `-t n` : timeout after n instructions have been run.
+ - `-s` : signed output mode. With this, you will see the output as two's compliment signed bytes. Example: `255` will be printed `-1`.
  - `-d` : CPU debug mode. With this, the program will print the current values for every clock cycle of: 
      1. The current microinstructions
      2. The Bus

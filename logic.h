@@ -3,6 +3,7 @@
 #include <array>
 #include <cstdint>
 #include <cstdio>
+#include <iostream>
 
 template <std::size_t STEPS_PER_INSTRUCTION>
 class logic{
@@ -59,28 +60,42 @@ class logic{
         std::uint8_t  outReg; //Output register (8-bit)
         std::array<std::uint8_t, 16> ram;
 
-        logic(const std::array<std::uint8_t, 16> &nram, const bool nDEBUG)
-        {
-            ram = nram;
-            DEBUG = nDEBUG;
-        }
-
         logic(const std::array<std::uint8_t, 16> &nram, std::array<std::array<std::uint16_t, STEPS_PER_INSTRUCTION>, 16> &ninst, const bool nDEBUG){
             ram = nram;
             DEBUG = nDEBUG;
             instructions = ninst;
         }
 
+        void debugOut(){
+            //printf("\033[2,31mBus: 0x%X, PC: 0x%X, IR: 0x%X, IC: 0x%X, MAR: 0x%X\nREG A: 0x%X REG B: 0x%X OUT: 0x%X\033[0m \n", bus, PC, IR, IC, MAR, regA, regB, outReg);
+            std::cout << "\033[1;31m--------------" << std::endl
+                      << std::hex << std::showbase << std::right
+                      << " Bus: " << static_cast<unsigned int>(bus)
+                      << " PC: " << static_cast<unsigned int>(PC)  
+                      << " IR: " << static_cast<unsigned int>(IR)
+                      << " IC: " << static_cast<unsigned int>(IC)
+                      << " MAR: " << std::hex << static_cast<unsigned int>(MAR)
+                      << std::endl 
+                      << "\033[1;33m"
+                      << " A:   " << static_cast<unsigned int>(regA)
+                      << " B:  " << static_cast<unsigned int>(regB)
+                      << " OUT:" << static_cast<unsigned int>(outReg)
+                       << "\033[0m" << std::endl;
+        }
+
         void cycle() { //Runs a cycle of instructions
-            microInstructions(instructions[IR >> 4][IC]); //Runs the microinstructions for the current step
             if(DEBUG)
-                printf("Bus: 0x%X, PC: 0x%X, IR: 0x%X, IC: 0x%X, MAR: 0x%X, \n", bus, PC, IR, IC, MAR);
+                debugOut();
+            microInstructions(instructions[IR >> 4][IC]); //Runs the microinstructions for the current step
+            
             IC++; //increment the Instruction step Counter
             if(IC == STEPS_PER_INSTRUCTION){ //Limit steps per Instructions
                 IC = 0;
             }
         }
-
+        int currentInstruction() {
+            return static_cast<int>(PC);
+        }
     private:
         std::uint8_t IR  = 0; //Instruction Register (8-bit)
         std::uint8_t MAR = 0; //Memory Address Register (4-bit)
@@ -89,7 +104,7 @@ class logic{
 
         void microInstructions(std::uint16_t options){ //Output commands have to come first
             if(DEBUG && options){ //The debug option shows the microinstructions that are selected in the cycle
-                printf("Instructions: ");
+                printf("\033[1;32m Instructions: ");
             }
             if(IR >> 4 == JC && flags & 1 && IC == 2){ //Set up the JC instruction if CF is set. If not it is no op
                 if(DEBUG)
@@ -191,7 +206,7 @@ class logic{
                     printf("CE ");
             }
             if (DEBUG && options)
-                printf("\n");
+                printf("\033[0m\n");
         }
 };
 #endif
