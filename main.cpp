@@ -58,20 +58,21 @@ int main(int argc, char** argv){
             }
         }
     }
-        if(ramPointer == nullptr){
-            printf("Missing RAM init\n%s", helptext);
-            return 1;
-        }
+    if(ramPointer == nullptr){
+        printf("Missing RAM init\n%s", helptext);
+        return 1;
+    }
 
-        CPU.ram = ramPointer;
-        while(!CPU.halt){ //runs until the CPU halts
-            CPU.cycle();
-            if(CPU.outputNow){
-                if(SIGNED_OUT)
-                    printf("%d\n", (int8_t)CPU.outReg); //Print the output register if its value changes
-                else
-                    printf("%d\n", (uint8_t)CPU.outReg); //Print the output register if its value changes
-            }
+    CPU.ram = ramPointer;
+    while(!CPU.halt){ //runs until the CPU halts
+        CPU.cycle();
+        if(CPU.outputNow){
+            if(SIGNED_OUT)
+                printf("%d\n", (int8_t)CPU.outReg); //Print the output register if its value changes
+            else
+                printf("%d\n", (uint8_t)CPU.outReg); //Print the output register if its value changes
         }
+    }
+    free(ramPointer);
     return 0;
 }
