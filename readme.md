@@ -16,25 +16,7 @@ For example, I have created a few example programs that can be found in the `exa
 - In hex:  
     `1D E0 4F 2E 4D 1F 4E 7A 60 FF 00 00 00 01 00 01`
 - And when you run it:
-    ```
-        $ ./emulator.bin -f example-programs/fibonacci.ram
-        Ben Eater's 8-bit Computer Emulator
-        Made by Rubem Nobre @ https://github.com/rubemnobre/eater-emulator
-
-        1
-        1
-        2
-        3
-        5
-        8
-        13
-        21
-        34
-        55
-        89
-        144
-        233
-    ```
+    ![Example image](https://i.imgur.com/G3Pqfbw.png)
 ### How to run a modified instruction set
 You can pass a modified instruction set by using the `-r` option. The instruction set should look like `uint16_t instructions[16][5]` and be in a binary file. I have included the default instruction set in the file `instructions.rom` so you can modify it more easily. For more info on how it works, you can look at the `logic.cpp` file, which is hopefully well documented enough.
 
@@ -50,6 +32,10 @@ Aside from the already mentioned options, I have included these:
      4. The Instruction Register
      5. The current step within the instruction
      6. The Memory Address Register
+     7. The current values in RAM
+     Typical output of a program in debug mode:
+     ![Example output from a program in debug mode](https://i.imgur.com/BplpbK1.png)
+     
 ### Considerations
-- In the current version, programs that do not Halt will run MANY times per second and will not time out. To kill them all you can do is press `ctrl+c`.
+- In the current version, programs that do not Halt will run MANY times per second and will not time out. ~~To kill them all you can do is press `ctrl+c`.~~ You can use the `-t` option to limit how many times it will run.
 - In the future, I intend to make a GUI version of this and add clock simulation to make it's timing more realistic.
