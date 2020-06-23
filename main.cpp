@@ -1,22 +1,22 @@
-#include "ram.cpp"
-#include "logic.cpp"
+#include <array>
 
-const char helptext[] = "usage: \n-f <file> : loads the binary file into RAM\n-r <file> : loads the binary file for the instructions rom\n-d : run with debug option on\n-s : signed output";
+#include "ram.h"
+#include "logic.h"
 
+static constexpr char helptext[] = "usage: \n-f <file> : loads the binary file into RAM\n-r <file> : loads the binary file for the instructions rom\n-d : run with debug option on\n-s : signed output\n";
+static constexpr int STEPS_PER_INSTRUCTION = 5;
 
 int main(int argc, char** argv){
     bool SIGNED_OUT = false;
-    uint8_t* ramPointer = nullptr; //ram array 
-
-    logic CPU(nullptr);
-
+    std::array<std::uint8_t, RAM::RAM_SIZE> ram = RAM::loadNull();
+    logic <STEPS_PER_INSTRUCTION> CPU(ram);
     printf("Ben Eater's 8-bit Computer Emulator\nMade by Rubem Nobre @ https://github.com/rubemnobre/eater-emulator\n\n");
 
     if(argc < 2){
         printf("%s", helptext);
         return 1;
     }
-    
+
     int i;
     for(i = 1; i < argc; i++){
         if(argv[i][0] == '-'){
@@ -31,13 +31,10 @@ int main(int argc, char** argv){
                         return 1;
                     }
                     FILE* ramFile = fopen(argv[i], "rb");
-                    ramPointer = RAM::loadFromFile(ramFile);
+                    ram = RAM::loadFromFile(ramFile);
                     fclose(ramFile);
                     break;
                 }
-                case 'n': // -n load ram as all zeroes
-                    ramPointer = RAM::loadNull();
-                    break;
                 case 'r':{ // -r load instructions rom from file
                     i++;
                     if(i == argc){
@@ -45,8 +42,17 @@ int main(int argc, char** argv){
                         return 1;
                     }
                     FILE* romFile = fopen(argv[i], "rb");
-                    fread(CPU.instructions, sizeof(uint16_t), 16*STEPS_PER_INSTRUCTION, romFile);
+
+                    std::array<std::array<std::uint16_t, STEPS_PER_INSTRUCTION>, 16> instructions;
+                    for (auto & instruction: instructions)
+                    {
+                        for(auto & step: instruction)
+                        {
+                            fread(&step, sizeof(uint16_t), 1, romFile);
+                        }
+                    }
                     fclose(romFile);
+                    CPU.instructions = instructions;
                     break;
                 }
                 case 's': //Set signed output to true
@@ -58,21 +64,17 @@ int main(int argc, char** argv){
             }
         }
     }
-    if(ramPointer == nullptr){
-        printf("Missing RAM init\n%s", helptext);
-        return 1;
-    }
 
-    CPU.ram = ramPointer;
-    while(!CPU.halt){ //runs until the CPU halts
+    CPU.ram = ram;
+
+    while(!CPU.halt) {
         CPU.cycle();
-        if(CPU.outputNow){
+        if(CPU.outputNow){   //Print the output register if its value changes
             if(SIGNED_OUT)
-                printf("%d\n", (int8_t)CPU.outReg); //Print the output register if its value changes
+                printf("%d\n", static_cast<int8_t>(CPU.outReg));
             else
-                printf("%d\n", (uint8_t)CPU.outReg); //Print the output register if its value changes
+                printf("%d\n", static_cast<uint8_t>(CPU.outReg));
         }
     }
-    free(ramPointer);
     return 0;
 }
