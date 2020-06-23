@@ -3,6 +3,7 @@
 #include "ram.h"
 #include "logic.h"
 
+#include <getopt.h>
 #include <cstdint>
 #include <cstdio>
 
@@ -20,56 +21,46 @@ int main(int argc, char** argv){
         return 1;
     }
 
-    int i;
-    for(i = 1; i < argc; i++){
-        if(argv[i][0] == '-'){
-            switch(argv[i][1]){
-                case 'h':
-                    printf("%s", helptext);
-                    return 0;
-                case 'f':{ // -f: ram loaded from a file
-                    i++;
-                    if(i == argc){
-                        printf("Missing arguments for -f\n%s", helptext);
-                        return 1;
-                    }
-                    FILE* ramFile = fopen(argv[i], "rb");
-                    ram = RAM::loadFromFile(ramFile);
-                    fclose(ramFile);
-                    break;
-                }
-                case 'r':{ // -r load instructions rom from file
-                    i++;
-                    if(i == argc){
-                        printf("Missing arguments for -r\n%s", helptext);
-                        return 1;
-                    }
-                    FILE* romFile = fopen(argv[i], "rb");
-
-                    std::array<std::array<std::uint16_t, STEPS_PER_INSTRUCTION>, 16> instructions;
-                    for (auto & instruction: instructions)
-                    {
-                        for(auto & step: instruction)
-                        {
-                            fread(&step, sizeof(std::uint16_t), 1, romFile);
-                        }
-                    }
-                    fclose(romFile);
-                    CPU.instructions = instructions;
-                    break;
-                }
-                case 's': //Set signed output to true
-                    SIGNED_OUT = true;
-                    break;
-                case 'd':
-                    CPU.DEBUG = true;
-                    break;
+    char c;
+    while((c = getopt(argc, argv, "hf:r:sd")) != -1){
+        switch (c)
+        {
+            case 'h':
+                printf("%s", helptext);
+                return 0;
+            case 'f':{ // -f: ram loaded from a file
+                FILE* ramFile = fopen(optarg, "rb");
+                ram = RAM::loadFromFile(ramFile);
+                fclose(ramFile);
+                break;
             }
+            case 'r':{ // -r load instructions rom from file
+                FILE* romFile = fopen(optarg, "rb");
+                std::array<std::array<std::uint16_t, STEPS_PER_INSTRUCTION>, 16> instructions;
+                for (auto & instruction: instructions)
+                {
+                    for(auto & step: instruction)
+                    {
+                        fread(&step, sizeof(std::uint16_t), 1, romFile);
+                    }
+                }
+                fclose(romFile);
+                CPU.instructions = instructions;
+                break;
+            }
+            case 's': //Set signed output to true
+                SIGNED_OUT = true;
+                break;
+            case 'd':
+                CPU.DEBUG = true;
+                break;
+            default:
+                printf("%d", helptext);
         }
     }
 
     CPU.ram = ram;
-
+    
     while(!CPU.halt) {
         CPU.cycle();
         if(CPU.outputNow){   //Print the output register if its value changes
