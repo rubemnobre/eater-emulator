@@ -68,7 +68,7 @@ class logic{
 
         void debugOut(){
             //printf("\033[2,31mBus: 0x%X, PC: 0x%X, IR: 0x%X, IC: 0x%X, MAR: 0x%X\nREG A: 0x%X REG B: 0x%X OUT: 0x%X\033[0m \n", bus, PC, IR, IC, MAR, regA, regB, outReg);
-            std::cout << "\033[1;31m--------------" << std::endl
+            std::cout << "\033[0;31m--------------" << std::endl
                       << std::hex << std::showbase << std::right
                       << " Bus: " << static_cast<unsigned int>(bus)
                       << " PC: " << static_cast<unsigned int>(PC)  
@@ -76,11 +76,15 @@ class logic{
                       << " IC: " << static_cast<unsigned int>(IC)
                       << " MAR: " << std::hex << static_cast<unsigned int>(MAR)
                       << std::endl 
-                      << "\033[1;33m"
+                      << "\033[0;33m"
                       << " A:   " << static_cast<unsigned int>(regA)
                       << " B:  " << static_cast<unsigned int>(regB)
                       << " OUT:" << static_cast<unsigned int>(outReg)
-                       << "\033[0m" << std::endl;
+                      << std::endl << "\033[0;36m RAM: ";
+            for(auto address : ram){
+                std::cout << std::hex << static_cast<unsigned int>(address) << " ";
+            }
+            std::cout << "\033[0m" << std::endl;
         }
 
         void cycle() { //Runs a cycle of instructions
