@@ -14,7 +14,7 @@ class logicWindow : public Gtk::Window{
         logicWindow() :
             nextButton("Clock Cycle"),
             nextInstructionButton("Next Instruction"),
-            clockSpeed(5, 500, 10),
+            clockSpeed(5, 510, 10),
             output("0")
         {
             set_border_width(10);
@@ -24,26 +24,27 @@ class logicWindow : public Gtk::Window{
 
             nextInstructionButton.signal_clicked().connect(sigc::mem_fun(*this, &logicWindow::cpu_inst_callback));
             nextInstructionButton.set_border_width(10);
-            nextInstructionButton.set_size_request(50, 10);
 
             nextButton.signal_clicked().connect(sigc::mem_fun(*this, &logicWindow::cpuCycle));
             nextButton.set_border_width(10);
-            nextButton.set_size_request(50, 10);
             
             clockSpeed.get_adjustment()->signal_value_changed().connect(sigc::mem_fun(*this, &logicWindow::set_clock));
+            clockSpeed.set_margin_bottom(10);
+            clockSpeed.set_margin_right(10);
             
-            output.set_text("0");
-            clockLabel.set_text("Clock (Hz):");
-            runClockLabel.set_text("Run Clock");
+            output.set_text("Output: 0");
+            clockLabel.set_text("Clock (Hz): ");
+            runClockLabel.set_text("Run Clock: ");
 
-            add(grid);
-            grid.attach(nextInstructionButton, 0, 1, 1, 1);
-            grid.attach(output               , 0, 0, 4, 1);
-            grid.attach(clockLabel           , 0, 2, 1, 1);
-            grid.attach(runClockLabel        , 2, 1, 1, 1);
-            grid.attach(runFree              , 3, 1, 1, 1);
-            grid.attach(nextButton           , 1, 1, 1, 1);
-            grid.attach(clockSpeed           , 1, 2, 3, 1);
+            timeFrame.add(timeGrid);
+            add(timeFrame);
+            timeGrid.attach(nextInstructionButton, 0, 1, 1, 1);
+            timeGrid.attach(output               , 0, 0, 4, 1);
+            timeGrid.attach(clockLabel           , 0, 2, 1, 1);
+            timeGrid.attach(runClockLabel        , 2, 1, 1, 1);
+            timeGrid.attach(runFree              , 3, 1, 1, 1);
+            timeGrid.attach(nextButton           , 1, 1, 1, 1);
+            timeGrid.attach(clockSpeed           , 1, 2, 3, 1);
 
             show_all_children();
         }
@@ -51,7 +52,7 @@ class logicWindow : public Gtk::Window{
         void cpuCycle(){
             if(!CPU.halt){
                 CPU.cycle();
-                output.set_text(std::to_string(CPU.outReg));
+                output.set_text("Output: " + std::to_string(CPU.outReg));
             }
         }
         void cpu_inst_callback(){
@@ -86,7 +87,8 @@ class logicWindow : public Gtk::Window{
         Gtk::HScale clockSpeed;
         Gtk::Button nextButton;
         Gtk::Button nextInstructionButton;
-        Gtk::Grid grid;
+        Gtk::Frame timeFrame;
+        Gtk::Grid timeGrid;
         Gtk::Label output;
         Gtk::Label clockLabel;
         Gtk::Label runClockLabel;
