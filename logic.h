@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <iostream>
+#include "ram.h"
 
 template <std::size_t STEPS_PER_INSTRUCTION>
 class logic{
@@ -64,6 +65,12 @@ class logic{
             ram = nram;
             DEBUG = nDEBUG;
             instructions = ninst;
+        }
+
+        logic(){
+            ram = RAM::loadNull();
+            DEBUG = true;
+            instructions = defaultInstructions;
         }
 
         void debugOut(){
