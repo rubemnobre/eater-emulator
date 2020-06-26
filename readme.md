@@ -17,6 +17,6 @@ For example, I have created a few example programs that can be found in the `exa
 - In hex:  
     `1D E0 4F 2E 4D 1F 4E 7A 60 FF 00 00 00 01 00 01`
 - And when you run it:
-    ![example](https://i.imgur.com/IrzQpDu.gif)
+    ![example](https://i.imgur.com/mTTH2c0.gif)
 ### How to run a modified instruction set
 You can pass a modified instruction set by modifying the `instructions.rom` file. The instruction set should look like `uint16_t instructions[16][5]` and be in a binary file. For more info on how it works, you can look at the `logic.h` file for the control words and microcode, which is hopefully well documented enough.
