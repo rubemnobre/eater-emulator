@@ -38,6 +38,7 @@ class logicWindow : public Gtk::Window{
 
             ramValue.signal_activate().connect(sigc::mem_fun(*this, &logicWindow::change_ram));
             ramAddress.signal_activate().connect(sigc::mem_fun(ramValue, &Gtk::Widget::grab_focus));
+            ramAddress.signal_changed().connect(sigc::mem_fun(*this, &logicWindow::address_changed));
             ramLoad.signal_clicked().connect(sigc::mem_fun(*this, &logicWindow::load_ram));
 
             nextButton.signal_clicked().connect(sigc::mem_fun(*this, &logicWindow::cpuCycle));
@@ -177,6 +178,10 @@ class logicWindow : public Gtk::Window{
         Gtk::Label clockLabel;
         Gtk::Label runClockLabel;
         Gtk::Switch runFree;
+
+        void address_changed(){
+            update_value(ramValue, CPU.ram[ramAddress.get_value_as_int()]);
+        }
 
         void change_ar(){
             try{
