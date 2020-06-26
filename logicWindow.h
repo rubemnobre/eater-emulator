@@ -5,17 +5,19 @@
 #include "logic.h"
 #include "ram.h"
 #include <iomanip>
+#include <bitset>
 
 constexpr int STEPS_PER_INSTRUCTION = 5;
 
 
 class logicWindow : public Gtk::Window{
     public:
+        logic<STEPS_PER_INSTRUCTION> CPU;
         logicWindow() :
             nextButton("Clock Cycle"),
             nextInstructionButton("Next Instruction"),
             ramLoad("Load"),
-            clockSpeed(5, 510, 10),
+            clockSpeed(1, 310, 10),
             ramAddress(Gtk::Adjustment::create(0, 0, 16, 1, 1, 1))
         {
             set_border_width(10);
@@ -28,6 +30,11 @@ class logicWindow : public Gtk::Window{
 
             nextInstructionButton.signal_clicked().connect(sigc::mem_fun(*this, &logicWindow::cpu_inst_callback));
             nextInstructionButton.set_border_width(10);
+
+            arValue.signal_activate().connect(sigc::mem_fun(*this, &logicWindow::change_ar));
+            brValue.signal_activate().connect(sigc::mem_fun(*this, &logicWindow::change_br));
+            pcValue.signal_activate().connect(sigc::mem_fun(*this, &logicWindow::change_pc));
+            irValue.signal_activate().connect(sigc::mem_fun(*this, &logicWindow::change_ir));
 
             ramValue.signal_activate().connect(sigc::mem_fun(*this, &logicWindow::change_ram));
             ramAddress.signal_activate().connect(sigc::mem_fun(ramValue, &Gtk::Widget::grab_focus));
@@ -48,11 +55,18 @@ class logicWindow : public Gtk::Window{
             addressLabel.set_text("RAM Address: ");
             valueLabel.set_text("Current Value (hex): ");
             fileLabel.set_text("Load RAM File: ");
+            arLabel.set_text("A Register: ");
+            brLabel.set_text("B Register: ");
+            irLabel.set_text("Instruction Register: ");
+            pcLabel.set_text("Program Counter: ");
+            wordLabel.set_text("Control Word: ");
+            lastLabel.set_text("Last microInstructions: ");
             
             //generalGrid.set_column_homogeneous(true);
             generalGrid.attach(outFrame , 0, 0, 1, 1);
-            generalGrid.attach(ramFrame , 1, 0, 1, 1);
             generalGrid.attach(timeFrame, 0, 1, 1, 1);
+            generalGrid.attach(ramFrame , 0, 2, 1, 1);
+            generalGrid.attach(regsFrame, 0, 3, 1, 1);
             
             ramLoad.set_border_width(5);
             ramFileChooser.set_border_width(5);
@@ -63,10 +77,27 @@ class logicWindow : public Gtk::Window{
             ramAddress.set_margin_left(5);
             ramValue.set_margin_left(5);
             ramValue.set_margin_right(5);
-            
+
+            regsFrame.add(regsGrid);
+            regsFrame.set_border_width(5);
+            regsGrid.set_row_homogeneous(true);
+            regsGrid.set_column_homogeneous(true);
+            regsGrid.attach(arValue  , 1, 0, 1, 1);
+            regsGrid.attach(brValue  , 3, 0, 1, 1);
+            regsGrid.attach(pcValue  , 1, 1, 1, 1);
+            regsGrid.attach(irValue  , 3, 1, 1, 1);
+            regsGrid.attach(wordValue, 1, 2, 1, 1);
+            regsGrid.attach(lastValue, 3, 2, 1, 1);
+            regsGrid.attach(arLabel  , 0, 0, 1, 1);
+            regsGrid.attach(brLabel  , 2, 0, 1, 1);
+            regsGrid.attach(pcLabel  , 0, 1, 1, 1);
+            regsGrid.attach(irLabel  , 2, 1, 1, 1);
+            regsGrid.attach(wordLabel, 0, 2, 1, 1);
+            regsGrid.attach(lastLabel, 2, 2, 1, 1);
 
             ramFrame.add(ramGrid);
             ramFrame.set_border_width(5);
+            ramGrid.set_row_homogeneous(true);
             ramGrid.set_column_homogeneous(true);
             ramGrid.attach(fileLabel     , 0, 0, 1, 1);
             ramGrid.attach(ramFileChooser, 1, 0, 2, 1);
@@ -78,6 +109,7 @@ class logicWindow : public Gtk::Window{
             
             outFrame.add(outGrid);
             outFrame.set_border_width(5);
+            outGrid.set_row_homogeneous(true);
             outGrid.set_column_homogeneous(true);
             outGrid.attach(signedOutLabel, 2, 2, 1, 1);
             outGrid.attach(outputLabel   , 0, 2, 1, 1);
@@ -86,6 +118,7 @@ class logicWindow : public Gtk::Window{
 
             timeFrame.add(timeGrid);
             timeFrame.set_border_width(5);
+            timeGrid.set_row_homogeneous(true);
             timeGrid.set_column_homogeneous(true);
             timeGrid.attach(nextInstructionButton, 0, 1, 1, 1);
             timeGrid.attach(clockLabel           , 0, 2, 1, 1);
@@ -98,12 +131,26 @@ class logicWindow : public Gtk::Window{
             show_all_children();
         }
     protected:
-        logic<STEPS_PER_INSTRUCTION> CPU;
-
+        
         sigc::connection timeoutConn;
         sigc::connection updateConn;
         
         Gtk::Grid generalGrid;
+
+        Gtk::Frame regsFrame;
+        Gtk::Grid regsGrid;
+        Gtk::Label wordValue;
+        Gtk::Entry arValue;
+        Gtk::Entry brValue;
+        Gtk::Entry pcValue;
+        Gtk::Entry irValue;
+        Gtk::Label lastValue;
+        Gtk::Label wordLabel;
+        Gtk::Label arLabel;
+        Gtk::Label brLabel;
+        Gtk::Label pcLabel;
+        Gtk::Label irLabel;
+        Gtk::Label lastLabel;
 
         Gtk::Frame ramFrame;
         Gtk::Grid ramGrid;
@@ -131,13 +178,49 @@ class logicWindow : public Gtk::Window{
         Gtk::Label runClockLabel;
         Gtk::Switch runFree;
 
+        void change_ar(){
+            try{
+                CPU.regA = static_cast<uint8_t>(std::stoi(arValue.get_text(), 0, 16));
+            }catch(std::exception e){
+                std::cout << e.what() << std::endl;
+            }
+            nextInstructionButton.grab_focus();
+        }
+
+        void change_br(){
+            try{
+                CPU.regB = static_cast<uint8_t>(std::stoi(brValue.get_text(), 0, 16));
+            }catch(std::exception e){
+                std::cout << e.what() << std::endl;
+            }
+            nextInstructionButton.grab_focus();
+        }
+
+        void change_pc(){
+            try{
+                CPU.PC = static_cast<uint8_t>(std::stoi(pcValue.get_text(), 0, 16));
+            }catch(std::exception e){
+                std::cout << e.what() << std::endl;
+            }
+            nextInstructionButton.grab_focus();
+        }
+        
+        void change_ir(){
+            try{
+                CPU.IR = static_cast<uint8_t>(std::stoi(irValue.get_text(), 0, 16));
+            }catch(std::exception e){
+                std::cout << e.what() << std::endl;
+            }
+            nextInstructionButton.grab_focus();
+        }
+
         void change_ram(){
             try{
                 CPU.ram[ramAddress.get_value_as_int()] = static_cast<uint8_t>(std::stoi(ramValue.get_text(), 0, 16));
             }catch(std::exception e){
                 std::cout << e.what() << std::endl;
             }
-            ramAddress.grab_focus_without_selecting();
+            nextInstructionButton.grab_focus();
             //return false;
         }
 
@@ -161,6 +244,8 @@ class logicWindow : public Gtk::Window{
             if(!CPU.halt){
                 CPU.cycle();
                 out_reg_update();
+                if(!ramValue.is_focus() && !ramAddress.is_focus())
+                    ramAddress.set_value(CPU.MAR);
             }
         }
 
@@ -171,10 +256,10 @@ class logicWindow : public Gtk::Window{
                 output.set_text(std::to_string(static_cast<int8_t>(CPU.outReg)));
         }
 
-        void update_ram_value(){
+        void update_value(Gtk::Entry &to_update, int value){
             std::stringstream strm;
-            strm << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(CPU.ram[ramAddress.get_value()]);
-            ramValue.set_text(std::string(strm.str()));
+            strm << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(value);
+            to_update.set_text(std::string(strm.str()));
         }
 
         void cpu_inst_callback(){
@@ -188,8 +273,20 @@ class logicWindow : public Gtk::Window{
         }
 
         bool update_callback(int arg){
-            if(!ramValue.is_focus())
-                update_ram_value();
+            if(!ramValue.is_focus() && !ramAddress.is_focus())
+                update_value(ramValue, CPU.ram[ramAddress.get_value_as_int()]);
+            if(!arValue.is_focus())
+                update_value(arValue , CPU.regA);
+            if(!brValue.is_focus())
+                update_value(brValue , CPU.regB);
+            if(!pcValue.is_focus())
+                update_value(pcValue , CPU.PC);
+            if(!irValue.is_focus())
+                update_value(irValue , CPU.IR);
+            lastValue.set_text(CPU.lastMicroInstructions);
+            std::stringstream strm;
+            strm << std::setfill('0') << std::setw(16) << std::bitset<16>(CPU.instructions[CPU.IR>>4][CPU.IC]);
+            wordValue.set_text(std::string(strm.str()));
             out_reg_update();
             return true;
         }
