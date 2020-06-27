@@ -13,9 +13,15 @@ emulator
 /ylwrap
 .deps/
 .dirstamp
+install-sh
+Makefile.in
+missing
 
 # http://www.gnu.org/software/autoconf
 
+aclocal.m4
+compile
+configure
 autom4te.cache
 /autoscan.log
 /autoscan-*.log
