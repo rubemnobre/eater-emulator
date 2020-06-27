@@ -6,7 +6,6 @@ emulator
 
 # http://www.gnu.org/software/automake
 
-Makefile.in
 /ar-lib
 /mdate-sh
 /py-compile
