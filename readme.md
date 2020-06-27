@@ -6,9 +6,12 @@ eater-emulator
  Also thank you to [Joseph Shaker](https://github.com/jshaker000) for the help with making this proper C++.
 
 ###  How to build
-To build this program, you can run:
-- ``$ g++ main.cpp -o emulator.bin `pkg-config gtkmm-3.0 --cflags --libs`` on your console. You need to have gtkmm-3.0 and all it's dependencies installed.
-- Or simply `$ make` on Linux.
+To build this program, you can run:  
+```bash
+./configure
+make
+```
+The output will be a binary named `emulator`.
 ### How to run your programs
 The programs for the emulated computer are run by loading the program into RAM and running the clock. To do this in the emulator, you can create a 16-Byte binary file and load it into the emulator RAM using the Load RAM File option in the gui.  
 For example, I have created a few example programs that can be found in the `example-programs/` folder using [Ghex](https://wiki.gnome.org/Apps/Ghex). This is what `fibonacci` looks like:
