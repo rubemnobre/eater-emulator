@@ -78,7 +78,7 @@ class logicWindow : public Gtk::Window{
             brLabel.set_text("B Register: ");
             irLabel.set_text("Instruction Register: ");
             pcLabel.set_text("Program Counter: ");
-            wordLabel.set_text("Control Word: ");
+            busLabel.set_text("Bus Value: ");
             lastLabel.set_text("Last microInstructions: ");
             
             //generalGrid.set_column_homogeneous(true);
@@ -105,13 +105,13 @@ class logicWindow : public Gtk::Window{
             regsGrid.attach(brValue  , 3, 0, 1, 1);
             regsGrid.attach(pcValue  , 1, 1, 1, 1);
             regsGrid.attach(irValue  , 3, 1, 1, 1);
-            regsGrid.attach(wordValue, 1, 2, 1, 1);
+            regsGrid.attach(busValue, 1, 2, 1, 1);
             regsGrid.attach(lastValue, 3, 2, 1, 1);
             regsGrid.attach(arLabel  , 0, 0, 1, 1);
             regsGrid.attach(brLabel  , 2, 0, 1, 1);
             regsGrid.attach(pcLabel  , 0, 1, 1, 1);
             regsGrid.attach(irLabel  , 2, 1, 1, 1);
-            regsGrid.attach(wordLabel, 0, 2, 1, 1);
+            regsGrid.attach(busLabel, 0, 2, 1, 1);
             regsGrid.attach(lastLabel, 2, 2, 1, 1);
 
             ramFrame.add(ramGrid);
@@ -158,13 +158,13 @@ class logicWindow : public Gtk::Window{
 
         Gtk::Frame regsFrame;
         Gtk::Grid regsGrid;
-        Gtk::Label wordValue;
+        Gtk::Label busValue;
         Gtk::Entry arValue;
         Gtk::Entry brValue;
         Gtk::Entry pcValue;
         Gtk::Entry irValue;
         Gtk::Label lastValue;
-        Gtk::Label wordLabel;
+        Gtk::Label busLabel;
         Gtk::Label arLabel;
         Gtk::Label brLabel;
         Gtk::Label pcLabel;
@@ -308,8 +308,8 @@ class logicWindow : public Gtk::Window{
                 update_value(irValue , CPU.IR);
             lastValue.set_text(CPU.lastMicroInstructions);
             std::stringstream strm;
-            strm << std::setfill('0') << std::setw(16) << std::bitset<16>(CPU.instructions[CPU.IR>>4][CPU.IC]);
-            wordValue.set_text(std::string(strm.str()));
+            strm << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(CPU.bus);
+            busValue.set_text(std::string(strm.str()));
             out_reg_update();
             return true;
         }
